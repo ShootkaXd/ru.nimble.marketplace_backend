@@ -32,7 +32,7 @@ class RegisterController(private val call: ApplicationCall) {
                         email = registerReceiveRemote.email,
                         password = registerReceiveRemote.password,
                         firstName = registerReceiveRemote.firstName,
-                        lastName = ""
+                        lastName = registerReceiveRemote.lastName
                     )
                 )
             } catch (e: ExposedSQLException) {

@@ -15,10 +15,5 @@ fun Application.configureRegisterRouting() {
         }
     }
 
-    routing {
-        webSocket("/register") {
-            val registerController = RegisterController(call)
-            registerController.registerNewUser()
-        }
-    }
+
 }

@@ -19,11 +19,6 @@ fun Application.configureLoginRouting() {
         }
     }
 
-    routing {
-        webSocket("/login") {
-            val loginController = LoginController(call)
-            loginController.performLogin()
-        }
-    }
+
 
 }

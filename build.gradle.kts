@@ -4,6 +4,7 @@ val logback_version: String by project
 val exposed_version: String by project
 val h2_version: String by project
 val postgresql_version: String by project
+val commons_codec_version: String by project
 
 plugins {
     kotlin("jvm") version "1.8.0"
@@ -42,5 +43,6 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation("io.ktor:ktor-server-websockets:$ktor_version")
+
 
 }

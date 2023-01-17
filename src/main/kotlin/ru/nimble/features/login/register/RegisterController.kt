@@ -29,6 +29,7 @@ class RegisterController(private val call: ApplicationCall) {
             try {
                 User.insert(
                     UserDTO(
+                        rowId = UUID.randomUUID().toString(),
                         email = registerReceiveRemote.email,
                         password = registerReceiveRemote.password,
                         firstName = registerReceiveRemote.firstName,

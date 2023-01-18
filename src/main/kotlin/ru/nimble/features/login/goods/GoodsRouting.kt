@@ -15,6 +15,11 @@ fun Application.configureGoodsRouting(){
             val goodsController = GoodsController(call)
             goodsController.createGoods()
         }
+
+        get("/goods"){
+            val goodsList = GoodsController(call)
+            goodsList.listGoods()
+        }
     }
 
 

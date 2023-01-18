@@ -11,9 +11,10 @@ data class FetchGoodsResponse(
 data class GoodsResponse(
     val idgoods : String,
     val name : String,
+    val price: Double,
     val manufacturer : String,
     val logo : String,
-    val grade : Int,
+    val grade : Double,
     val description : String,
     val specification : String,
     val availability : Int,

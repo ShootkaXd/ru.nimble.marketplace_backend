@@ -8,9 +8,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Goods : Table() {
     private val idgoods = Goods.varchar("idgoods", 100)
     private val name = Goods.varchar("name", 100)
+    private val price = Goods.double("price")
     private val manufacturer = Goods.varchar("manufacturer", 50)
     private val logo = Goods.varchar("logo", 0)
-    private val grade = Goods.integer("grade")
+    private val grade = Goods.double("grade")
     private val description = Goods.varchar("description", 500)
     private val specification = Goods.varchar("specification", 500)
     private val availability = Goods.integer("availability")
@@ -21,6 +22,7 @@ object Goods : Table() {
             Goods.insert(){
                 it[idgoods] = GoodsDTO.idgoods
                 it[name] = GoodsDTO.name
+                it[price] = GoodsDTO.price
                 it[manufacturer] = GoodsDTO.manufacturer
                 it[logo] = GoodsDTO.logo
                 it[grade] = GoodsDTO.grade
@@ -39,6 +41,7 @@ object Goods : Table() {
                         GoodsDTO(
                             idgoods = it[idgoods],
                             name = it[name],
+                            price = it[price],
                             manufacturer = it[manufacturer],
                             logo = it[logo],
                             grade = it[grade],

@@ -30,6 +30,10 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-cio-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
@@ -44,5 +48,6 @@ dependencies {
 
     implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
+    implementation("commons-codec:commons-codec:1.14")
 
 }

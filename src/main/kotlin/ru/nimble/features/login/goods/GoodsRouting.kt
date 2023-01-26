@@ -20,6 +20,11 @@ fun Application.configureGoodsRouting(){
             val goodsList = GoodsController(call)
             goodsList.listGoods()
         }
+
+        get("/goods/catalog"){
+            val goodsListCatalog = GoodsController(call)
+            goodsListCatalog.catalogGoodsView()
+        }
     }
 
 

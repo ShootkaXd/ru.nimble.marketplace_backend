@@ -4,15 +4,20 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.codec.digest.DigestUtils
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import ru.nimble.database.tokens.TokenDTO
 import ru.nimble.database.tokens.Tokens
 import ru.nimble.database.user.User
 import ru.nimble.database.user.UserDTO
+import ru.nimble.security.hashing.SaltedHash
 import ru.nimble.utils.isValidEmail
+import java.security.SecureRandom
 import java.util.*
 
 class RegisterController(private val call: ApplicationCall) {
+
 
     suspend fun registerNewUser() {
         val registerReceiveRemote = call.receive<RegisterReceiveRemote>()
@@ -31,15 +36,16 @@ class RegisterController(private val call: ApplicationCall) {
                     UserDTO(
                         rowId = UUID.randomUUID().toString(),
                         email = registerReceiveRemote.email,
-                        password = registerReceiveRemote.password,
+                        password = generateSaltedHash(registerReceiveRemote.password, 32).hash,
                         firstName = registerReceiveRemote.firstName,
-                        lastName = registerReceiveRemote.lastName
+                        lastName = registerReceiveRemote.lastName,
+                        salt = generateSaltedHash(registerReceiveRemote.password, 32).salt
                     )
                 )
             } catch (e: ExposedSQLException) {
                 call.respond(HttpStatusCode.Conflict, "Пользователь уже существует")
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "Не могу создать пользователя${e.localizedMessage}")
+                call.respond(HttpStatusCode.BadRequest, "Не могу создать пользователя ${e.localizedMessage}")
             }
 
             Tokens.insert(
@@ -51,5 +57,14 @@ class RegisterController(private val call: ApplicationCall) {
 
             call.respond(RegisterResponseRemote(token = token))
         }
+    }
+    private fun generateSaltedHash(value: String, saltLength: Int): SaltedHash {
+        val salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLength)
+        val saltAsHex = Hex.encodeHexString(salt)
+        val hash = DigestUtils.sha256Hex(value)
+        return SaltedHash(
+            hash = hash,
+            salt = saltAsHex
+        )
     }
 }

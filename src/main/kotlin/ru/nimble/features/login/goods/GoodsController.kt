@@ -4,13 +4,8 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import ru.nimble.database.goods.Goods
-import ru.nimble.database.goods.mapToCreateGoodsResponse
-import ru.nimble.database.goods.mapToGoodsDTO
-import ru.nimble.database.goods.mapToGoodsResponse
-import ru.nimble.features.login.goods.models.CreateGoodsRequest
-import ru.nimble.features.login.goods.models.FetchGoodsRequest
-import ru.nimble.features.login.goods.models.FetchGoodsResponse
+import ru.nimble.database.goods.*
+import ru.nimble.features.login.goods.models.*
 import ru.nimble.utils.TokenCheck
 
 class GoodsController(private val call: ApplicationCall) {
@@ -44,6 +39,14 @@ class GoodsController(private val call: ApplicationCall) {
         call.respond(FetchGoodsResponse(
             goods = Goods.fetchGoods().filter { it.name.contains(request.searchQuery, ignoreCase = true) }
                 .map { it.mapToGoodsResponse() }
+        ))
+    }
+
+    suspend fun catalogGoodsView(){
+        val request = call.receive<FetchGoodsRequest>()
+        call.respond(CatalogGoodsResponse(
+            goods = Goods.fetchGoods().filter { it.name.contains(request.searchQuery, ignoreCase = true) }
+                .map { it.mapCatalogGoods() }
         ))
     }
 }

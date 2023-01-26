@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import org.apache.commons.codec.digest.DigestUtils
 import ru.nimble.database.tokens.TokenDTO
 import ru.nimble.database.tokens.Tokens
 import ru.nimble.database.user.User
@@ -17,7 +18,7 @@ class LoginController(private val call: ApplicationCall){
         if (userDTO == null) {
             call.respond(HttpStatusCode.BadRequest, "Пользователь не существует")
         } else {
-            if (userDTO.password == receive.password) {
+            if (userDTO.password == DigestUtils.sha256Hex(receive.password)) {
                 val token = UUID.randomUUID().toString()
                 Tokens.insert(
                     TokenDTO(

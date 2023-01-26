@@ -9,9 +9,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object User: Table("users"){
     private val id = User.varchar("id", 100)
     private val email = User.varchar("email", 50)
-    private val password = User.varchar("password", 25)
+    private val password = User.varchar("password", 100)
     private val firstName = User.varchar("firstName", 25)
     private val lastName = User.varchar("lastName", 25)
+    private val salt = User.varchar("salt", 100)
 
 
     fun insert(userDTO: UserDTO){
@@ -22,6 +23,7 @@ object User: Table("users"){
                 it[password] = userDTO.password
                 it[firstName] = userDTO.firstName
                 it[lastName] = userDTO.lastName
+                it[salt] = userDTO.salt
             }
         }
     }
@@ -35,7 +37,8 @@ object User: Table("users"){
                     email = userModel[User.email],
                     password = userModel[password],
                     firstName = userModel[firstName],
-                    lastName = userModel[lastName]
+                    lastName = userModel[lastName],
+                    salt = userModel[salt]
                 )
             }
         }catch (e:Exception){

@@ -9,7 +9,6 @@ data class FetchGoodsResponse(
 
 @Serializable
 data class GoodsResponse(
-    val idgoods : String,
     val name : String,
     val price: Double,
     val manufacturer : String,

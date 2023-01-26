@@ -5,5 +5,6 @@ class UserDTO (
     val email: String,
     val password: String,
     val firstName: String,
-    val lastName: String
+    val lastName: String,
+    val salt: String
 )

@@ -1,9 +1,7 @@
 package ru.nimble.database.goods
 
 import kotlinx.serialization.Serializable
-import ru.nimble.features.login.goods.models.CreateGoodsRequest
-import ru.nimble.features.login.goods.models.CreateGoodsResponse
-import ru.nimble.features.login.goods.models.GoodsResponse
+import ru.nimble.features.login.goods.models.*
 import java.util.UUID
 
 @Serializable
@@ -48,7 +46,6 @@ fun GoodsDTO.mapToCreateGoodsResponse(): CreateGoodsResponse =
 
 fun GoodsDTO.mapToGoodsResponse(): GoodsResponse =
     GoodsResponse(
-        idgoods = idgoods,
         name = name,
         price = price,
         manufacturer = manufacturer,
@@ -57,4 +54,13 @@ fun GoodsDTO.mapToGoodsResponse(): GoodsResponse =
         description = description,
         specification = specification,
         availability = availability
+    )
+
+
+fun GoodsDTO.mapCatalogGoods(): CatalogGoods =
+    CatalogGoods(
+        name = name,
+        price = price,
+        logo = logo,
+        description = description
     )

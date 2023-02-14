@@ -3,7 +3,7 @@ package ru.nimble.features.login.goods.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateGoodsRequest (
+data class GoodsRequest (
     val name : String,
     val price: Double,
     val manufacturer : String,
@@ -15,8 +15,8 @@ data class CreateGoodsRequest (
 )
 
 @Serializable
-data class CreateGoodsResponse(
-    val idgoods : String,
+data class GoodsResponse(
+    val id: String,
     val name : String,
     val price: Double,
     val manufacturer : String,

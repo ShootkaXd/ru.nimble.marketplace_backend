@@ -3,6 +3,7 @@ package ru.nimble.features.login.goods.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-class FetchGoodsRequest(
-    val searchQuery: String
+data class ListResponse<T>(
+    val items: List<T>
 )
+

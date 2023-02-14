@@ -1,26 +1,41 @@
 package ru.nimble.database.goods
 
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object Goods : Table() {
-    private val idgoods = Goods.varchar("idgoods", 100)
-    private val name = Goods.varchar("name", 100)
-    private val price = Goods.double("price")
-    private val manufacturer = Goods.varchar("manufacturer", 50)
-    private val logo = Goods.varchar("logo", 0)
-    private val grade = Goods.double("grade")
-    private val description = Goods.varchar("description", 500)
-    private val specification = Goods.varchar("specification", 500)
-    private val availability = Goods.integer("availability")
+fun ResultRow.toGoods(): GoodsModel = GoodsModel(
+    id = this[Goods.id].toString(),
+    name = this[Goods.name],
+    price = this[Goods.price],
+    manufacturer = this[Goods.manufacturer],
+    logo = this[Goods.logo],
+    grade = this[Goods.grade],
+    description = this[Goods.description],
+    specification = this[Goods.specification],
+    availability = this[Goods.availability]
+)
+object Goods : UUIDTable(name = "goods") {
+    val name = Goods.varchar("name", 100)
+    val price = Goods.double("price")
+    val manufacturer = Goods.varchar("manufacturer", 50)
+    val logo = Goods.varchar("logo", 100)
+    val grade = Goods.double("grade")
+    val description = Goods.varchar("description", 500)
+    val specification = Goods.varchar("specification", 500)
+    val availability = Goods.integer("availability")
+
+    init {
+            index(true, name, specification)
+    }
 
 
-    fun insert(GoodsDTO: GoodsDTO){
+    fun insert(GoodsDTO: GoodsModel){
         transaction {
             Goods.insert(){
-                it[idgoods] = GoodsDTO.idgoods
                 it[name] = GoodsDTO.name
                 it[price] = GoodsDTO.price
                 it[manufacturer] = GoodsDTO.manufacturer
@@ -33,23 +48,14 @@ object Goods : Table() {
         }
     }
 
-    fun fetchGoods(): List<GoodsDTO> {
+    fun fetchAll(): List<GoodsModel> {
         return try {
             transaction {
-                Goods.selectAll().toList()
+                Goods.selectAll()
                     .map {
-                        GoodsDTO(
-                            idgoods = it[idgoods],
-                            name = it[name],
-                            price = it[price],
-                            manufacturer = it[manufacturer],
-                            logo = it[logo],
-                            grade = it[grade],
-                            description = it[description],
-                            specification = it[specification],
-                            availability = it[availability]
-                        )
+                        it.toGoods()
                     }
+
             }
         } catch (e: Exception) {
             emptyList()

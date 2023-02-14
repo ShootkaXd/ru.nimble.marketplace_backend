@@ -9,44 +9,34 @@ import ru.nimble.features.login.goods.models.*
 import ru.nimble.utils.TokenCheck
 
 class GoodsController(private val call: ApplicationCall) {
-
-    suspend fun fetchAllGoods(){
-        val request = call.receive<FetchGoodsRequest>()
-        val token = call.request.headers["Bearer-Authorization"]
-
-        if (TokenCheck.isTokenValid(token.orEmpty()) || TokenCheck.isTokenAdmin(token.orEmpty())) {
-            call.respond(Goods.fetchGoods().first{ it.name.contains(request.searchQuery, ignoreCase = true)})
-        }else{
-            call.respond(HttpStatusCode.Unauthorized, "Token expired")
-        }
-    }
-
     suspend fun createGoods(){
         val token = call.request.headers["Bearer-Authorization"]
-        if (TokenCheck.isTokenAdmin(token.orEmpty())){
-            val request = call.receive<CreateGoodsRequest>()
-            val goods = request.mapToGoodsDTO()
-            Goods.insert(goods)
-            call.respond(goods.mapToCreateGoodsResponse())
-        }else{
-            call.respond(HttpStatusCode.Unauthorized, "Token expired")
+        if (token == null){
+            call.respond(HttpStatusCode.Unauthorized, "Not logged in")
+            return
         }
-
+        if (TokenCheck.isTokenAdmin(token)){
+            val request = call.receive<GoodsRequest>()
+            val goods = request.toGoodsModel()
+            Goods.insert(goods)
+            call.respond(goods.toGoodsResponse())
+        }else{
+            call.respond(HttpStatusCode.Forbidden, "User is not admin")
+        }
     }
 
     suspend fun listGoods(){
-        val request = call.receive<FetchGoodsRequest>()
-        call.respond(FetchGoodsResponse(
-            goods = Goods.fetchGoods().filter { it.name.contains(request.searchQuery, ignoreCase = true) }
-                .map { it.mapToGoodsResponse() }
+        val search = call.parameters["search"]
+        var goods = Goods.fetchAll()
+        if (search != null){
+            goods = goods.filter{ it.name.contains(search, ignoreCase = true) }
+        }
+        call.respond(ListResponse<GoodsModel>(
+                goods
         ))
     }
 
-    suspend fun catalogGoodsView(){
-        val request = call.receive<FetchGoodsRequest>()
-        call.respond(CatalogGoodsResponse(
-            goods = Goods.fetchGoods().filter { it.name.contains(request.searchQuery, ignoreCase = true) }
-                .map { it.mapCatalogGoods() }
-        ))
-    }
+
+
+
 }

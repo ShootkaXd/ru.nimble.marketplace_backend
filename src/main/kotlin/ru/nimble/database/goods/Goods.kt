@@ -2,7 +2,6 @@ package ru.nimble.database.goods
 
 import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -22,7 +21,7 @@ object Goods : UUIDTable(name = "goods") {
     val name = Goods.varchar("name", 100)
     val price = Goods.double("price")
     val manufacturer = Goods.varchar("manufacturer", 50)
-    val logo = Goods.varchar("logo", 100)
+    val logo = Goods.varchar("logo", 500)
     val grade = Goods.double("grade")
     val description = Goods.varchar("description", 500)
     val specification = Goods.varchar("specification", 500)

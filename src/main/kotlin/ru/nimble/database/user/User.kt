@@ -1,12 +1,13 @@
 package ru.nimble.database.user
 
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.nimble.database.tokens.TokenDTO
+import ru.nimble.database.tokens.Tokens
+import java.util.UUID
 
-object User: Table("users"){
+object User: Table("users") {
     private val id = User.varchar("id", 100)
     private val email = User.varchar("email", 50)
     private val password = User.varchar("password", 100)
@@ -15,7 +16,7 @@ object User: Table("users"){
     private val salt = User.varchar("salt", 100)
 
 
-    fun insert(userDTO: UserDTO){
+    fun insert(userDTO: UserDTO) {
         transaction {
             User.insert {
                 it[id] = userDTO.rowId
@@ -28,7 +29,7 @@ object User: Table("users"){
         }
     }
 
-    fun fetchUser(email: String) : UserDTO? {
+    fun fetchUser(email: String): UserDTO? {
         return try {
             transaction {
                 val userModel = User.select { User.email.eq(email) }.single()
@@ -41,8 +42,57 @@ object User: Table("users"){
                     salt = userModel[salt]
                 )
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             null
         }
     }
+
+    fun getAll(): ArrayList<UserOut> {
+        val users: ArrayList<UserOut> = arrayListOf()
+        transaction {
+            User.selectAll().map {
+                users.add(
+                    UserOut(
+                        email = it[User.email],
+                        firstName = it[User.firstName],
+                        lastName = it[User.lastName]
+                    )
+                )
+            }
+        }
+        return users
+    }
+
+
+    fun update(userOut: UserOut, id: String){
+        transaction {
+            User.update({User.id eq id}){
+                it[email] = userOut.email
+                it[firstName] = userOut.firstName
+                it[lastName] = userOut.lastName
+            }
+        }
+    }
+
+
+    fun userOut(id: String):List<UserOut>{
+        return try{
+            transaction {
+                User.select{ (User.id eq id) }.toList()
+                    .map{
+                        UserOut(
+                            email = it[User.email],
+                            firstName = it[firstName],
+                            lastName = it[lastName]
+                        )
+                    }
+            }
+        }catch (e:Exception){
+            emptyList()
+        }
+    }
+
+
+
+
 }

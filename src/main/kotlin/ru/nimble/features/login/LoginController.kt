@@ -22,7 +22,7 @@ class LoginController(private val call: ApplicationCall){
         if (userDTO == null) {
             call.respond(HttpStatusCode.BadRequest, "Пользователь не существует")
         } else {
-            if (userDTO.password == generateSaltedHash(receive.password, 32).hash) {
+            if (userDTO.password == DigestUtils.sha256Hex(receive.password)) {
                 val token = UUID.randomUUID().toString()
                 Tokens.insert(
                     TokenDTO(
@@ -31,9 +31,9 @@ class LoginController(private val call: ApplicationCall){
                         token = token
                     )
                 )
-                call.respond(LoginResponseRemote(token = token))
+                call.respond(LoginResponseRemote(token = token, userId = userDTO.rowId))
             } else {
-                call.respond(HttpStatusCode.BadRequest, "Неправильный пароль")
+                call.respond(HttpStatusCode.BadRequest, "Неправильный пароль ${receive.password}")
             }
         }
     }

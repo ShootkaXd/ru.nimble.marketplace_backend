@@ -8,6 +8,8 @@ import ru.nimble.features.login.goods.configureGoodsRouting
 import ru.nimble.features.login.register.configureRegisterRouting
 import ru.nimble.plugins.*
 import ru.nimble.database.passwordDB
+import ru.nimble.features.login.cart.configureCartRouting
+import ru.nimble.features.login.order.configureOrderRouting
 
 
 fun main() {
@@ -23,6 +25,8 @@ fun main() {
         configureRouting()
         configureLoginRouting()
         configureRegisterRouting()
+        configureCartRouting()
+        configureOrderRouting()
         configureSerialization()
     }.start(wait = true)
 }

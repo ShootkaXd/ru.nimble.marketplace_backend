@@ -3,7 +3,10 @@ package ru.nimble.database.goods
 import kotlinx.serialization.Serializable
 import ru.nimble.database.base.BaseModel
 import ru.nimble.features.login.goods.models.*
+import java.text.SimpleDateFormat
+import java.util.*
 
+val sdf = SimpleDateFormat("yyyyMMddHHmmssSSS")
 @Serializable
 class GoodsModel(
     override val id: String,
@@ -15,6 +18,7 @@ class GoodsModel(
     val description : String,
     val specification : String,
     val availability : Int,
+    val vendorCode: String
 ): BaseModel()
 
 fun GoodsRequest.toGoodsModel(): GoodsModel =
@@ -27,7 +31,8 @@ fun GoodsRequest.toGoodsModel(): GoodsModel =
         grade = grade,
         description = description,
         specification = specification,
-        availability = availability
+        availability = availability,
+        vendorCode = sdf.format(Date()),
     )
 
 fun GoodsModel.toGoodsResponse(): GoodsResponse =
@@ -40,5 +45,6 @@ fun GoodsModel.toGoodsResponse(): GoodsResponse =
         grade = grade,
         description = description,
         specification = specification,
-        availability = availability
+        availability = availability,
+        vendorCode = sdf.format(Date()),
     )

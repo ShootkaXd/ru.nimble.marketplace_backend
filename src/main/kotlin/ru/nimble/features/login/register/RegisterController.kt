@@ -10,6 +10,7 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import ru.nimble.database.tokens.TokenDTO
 import ru.nimble.database.tokens.Tokens
 import ru.nimble.database.user.User
+import ru.nimble.database.user.UserAddress
 import ru.nimble.database.user.UserDTO
 import ru.nimble.security.hashing.SaltedHash
 import ru.nimble.utils.isValidEmail
@@ -39,7 +40,7 @@ class RegisterController(private val call: ApplicationCall) {
                         password = generateSaltedHash(registerReceiveRemote.password, 32).hash,
                         firstName = registerReceiveRemote.firstName,
                         lastName = registerReceiveRemote.lastName,
-                        salt = generateSaltedHash(registerReceiveRemote.password, 32).salt
+                        salt = generateSaltedHash(registerReceiveRemote.password, 32).salt,
                     )
                 )
             } catch (e: ExposedSQLException) {
@@ -67,4 +68,31 @@ class RegisterController(private val call: ApplicationCall) {
             salt = saltAsHex
         )
     }
+
+    suspend fun registerAddress(){
+        val id = call.request.headers["id"]
+        val userAddress = call.receive<UserAddress>()
+        if (id != null){
+            User.insertAddress(userAddress, id)
+            call.respond(HttpStatusCode.OK)
+        }else{
+            call.respond(HttpStatusCode.BadRequest)
+        }
+    }
+//    suspend fun registerAddress(){
+//    val registerReceiveRemoteAddress = call.receive<RegisterReceiveRemoteAddress>()
+//    try {
+//        User.insertAddress(
+//            UserAddress(
+//                home_address = registerReceiveRemoteAddress.home_address,
+//                house_address = registerReceiveRemoteAddress.house_address,
+//                city = registerReceiveRemoteAddress.city
+//            )
+//        )
+//    } catch (e: ExposedSQLException) {
+//        call.respond(HttpStatusCode.Conflict, "Пользователь уже существует")
+//    } catch (e: Exception) {
+//        call.respond(HttpStatusCode.BadRequest, "Не могу создать пользователя ${e.localizedMessage}")
+//    }
+//    }
 }

@@ -8,12 +8,15 @@ import ru.nimble.database.tokens.Tokens
 import java.util.UUID
 
 object User: Table("users") {
-    private val id = User.varchar("id", 100)
+    val id = User.varchar("id", 100)
     private val email = User.varchar("email", 50)
     private val password = User.varchar("password", 100)
     private val firstName = User.varchar("firstName", 25)
     private val lastName = User.varchar("lastName", 25)
     private val salt = User.varchar("salt", 100)
+    private val home_address = User.varchar("home_address", 150)
+    private val house_address = User.varchar("house_address", 150)
+    private val city = User.varchar("city", 150)
 
 
     fun insert(userDTO: UserDTO) {
@@ -39,7 +42,7 @@ object User: Table("users") {
                     password = userModel[password],
                     firstName = userModel[firstName],
                     lastName = userModel[lastName],
-                    salt = userModel[salt]
+                    salt = userModel[salt],
                 )
             }
         } catch (e: Exception) {
@@ -81,7 +84,7 @@ object User: Table("users") {
                 User.select{ (User.id eq id) }.toList()
                     .map{
                         UserOut(
-                            email = it[User.email],
+                            email = it[email],
                             firstName = it[firstName],
                             lastName = it[lastName]
                         )
@@ -92,7 +95,14 @@ object User: Table("users") {
         }
     }
 
-
-
+    fun insertAddress(userAddress: UserAddress, id: String) {
+        transaction {
+            User.update({User.id eq id}) {
+                it[home_address] = userAddress.home_address
+                it[house_address] = userAddress.house_address
+                it[city] = userAddress.city
+            }
+        }
+    }
 
 }

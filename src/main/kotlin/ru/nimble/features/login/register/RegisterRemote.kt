@@ -11,6 +11,13 @@ data class RegisterReceiveRemote(
 )
 
 @Serializable
+data class RegisterReceiveRemoteAddress(
+    val home_address: String,
+    val house_address: String,
+    val city: String
+)
+
+@Serializable
 data class RegisterResponseRemote(
     val token: String
 )

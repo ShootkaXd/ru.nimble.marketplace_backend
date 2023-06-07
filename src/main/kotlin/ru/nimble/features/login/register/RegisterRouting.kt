@@ -11,6 +11,7 @@ import ru.nimble.features.login.LoginController
 fun Application.configureRegisterRouting() {
 
     routing {
+
         post("/register") {
             val registerController = RegisterController(call)
             registerController.registerNewUser()
@@ -18,6 +19,11 @@ fun Application.configureRegisterRouting() {
 
         get("/users"){
             call.respond(User.getAll())
+        }
+
+        post("/register/address"){
+            val registerController = RegisterController(call)
+            registerController.registerAddress()
         }
 
     }

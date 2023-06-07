@@ -12,6 +12,7 @@ data class GoodsRequest (
     val description : String,
     val specification : String,
     val availability : Int,
+    val vendorCode: String,
 )
 
 @Serializable
@@ -25,4 +26,5 @@ data class GoodsResponse(
     val description : String,
     val specification : String,
     val availability : Int,
+    val vendorCode: String,
 )

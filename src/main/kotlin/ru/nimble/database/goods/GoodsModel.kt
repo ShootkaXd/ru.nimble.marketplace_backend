@@ -48,3 +48,17 @@ fun GoodsModel.toGoodsResponse(): GoodsResponse =
         availability = availability,
         vendorCode = sdf.format(Date()),
     )
+
+fun GoodsModel.toGoodsResponseCart(): GoodsResponse =
+    GoodsResponse(
+        id = id,
+        name = name,
+        price = price,
+        manufacturer = manufacturer,
+        logo = logo,
+        grade = grade,
+        description = description,
+        specification = specification,
+        availability = availability,
+        vendorCode = vendorCode,
+    )

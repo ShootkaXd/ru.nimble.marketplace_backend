@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.nimble.database.goods.Goods
 import ru.nimble.database.goods.toGoodsResponse
+import ru.nimble.database.goods.toGoodsResponseCart
 import ru.nimble.database.user.User
 
 
@@ -18,21 +19,23 @@ object Cart: Table() {
 
     fun addToCart(cartItem: CartItem){
         transaction {
-            val item = Cart.select{ Cart.productId eq cartItem.productId}.singleOrNull()?.let { object {
-                val quantity : Int = it[Cart.quantity]
-            } }
-            if (item?.quantity != null){
-                Cart.update ({ Cart.productId eq cartItem.productId }){
-                    with(SqlExpressionBuilder){
+            val item = Cart.select { Cart.productId eq cartItem.productId and (Cart.userId eq cartItem.userId)}.singleOrNull()?.let {
+                object {
+                    val quantity: Int = it[Cart.quantity]
+                }
+            }
+            if (item?.quantity != null) {
+                Cart.update({Cart.productId eq cartItem.productId and (Cart.userId eq cartItem.userId)}) {
+                    with(SqlExpressionBuilder) {
                         it[Cart.quantity] = Cart.quantity + 1
                     }
                 }
-                return@transaction
-            }
-            Cart.insert {
-                it[userId] = cartItem.userId
-                it[productId] = cartItem.productId
-                it[quantity] = 1
+            } else {
+                Cart.insert {
+                    it[userId] = cartItem.userId
+                    it[productId] = cartItem.productId
+                    it[quantity] = 1
+                }
             }
         }
     }
@@ -47,8 +50,9 @@ object Cart: Table() {
         return transaction {
             Cart.select{ Cart.userId eq userId}.map {
                 Carts(
+                    product = Goods.getGoodsByVendorCode(it[productId]).toGoodsResponseCart(),
                     quantity = it[quantity],
-                    product = Goods.getGoodsByVendorCode(it[productId]).toGoodsResponse()
+                    id = it[Cart.id]
                 )
             }
         }

@@ -7,16 +7,12 @@ import io.ktor.server.routing.*
 fun Application.configureOrderRouting(){
 
     routing {
-        post("/order") {
-            val orderController = OrderController(call)
-            orderController.createOrder()
+        route("/orders") {
+            post {
+                val controller = OrderController(call)
+                controller.orderCreate()
+            }
         }
-
-        get("/order/{userId}"){
-            val orderController = OrderController(call)
-            orderController.getUserOrder()
-        }
-
     }
 
 }

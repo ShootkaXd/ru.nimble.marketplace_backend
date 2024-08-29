@@ -10,7 +10,7 @@ import ru.nimble.database.user.User
 
 
 object Cart: Table() {
-    val id = integer("id").autoIncrement()
+    var id = integer("id").autoIncrement()
     private val userId = varchar("user_id",100).references(User.id)
     private val productId = varchar("product_id", 100).references(Goods.vendorCode)
     private val quantity = integer("quantity")

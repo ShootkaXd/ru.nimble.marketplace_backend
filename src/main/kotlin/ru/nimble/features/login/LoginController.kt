@@ -33,7 +33,7 @@ class LoginController(private val call: ApplicationCall){
                 )
                 call.respond(LoginResponseRemote(token = token, userId = userDTO.rowId))
             } else {
-                call.respond(HttpStatusCode.BadRequest, "Неправильный пароль ${receive.password}")
+                call.respond(HttpStatusCode.BadRequest, "Неправильный пароль")
             }
         }
     }

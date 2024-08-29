@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "ru.nimble"
-version = "0.0.1"
+version = "0.9.7"
 application {
     mainClass.set("ru.nimble.ApplicationKt")
 
@@ -51,4 +51,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.14")
 
     implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+
 }

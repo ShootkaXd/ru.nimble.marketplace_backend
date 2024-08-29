@@ -3,6 +3,7 @@ package ru.nimble.database.cart
 import kotlinx.serialization.Serializable
 import ru.nimble.features.login.goods.models.GoodsResponse
 
+
 @Serializable
 data class CartItem(
     val userId: String,

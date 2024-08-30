@@ -18,6 +18,7 @@ data class Order(
     val totalAmount: Double,
     val items: List<OrderItem>,
     val createdAt: String,
+    val status: String
 )
 
 @Serializable

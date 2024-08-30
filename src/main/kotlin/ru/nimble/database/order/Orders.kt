@@ -19,7 +19,7 @@ object Orders : IntIdTable() {
         return transaction {
             val cartItems = Cart.getByUserId(userId)
 
-            if (cartItems.isEmpty()) return@transaction null // Корзина пуста
+            if (cartItems.isEmpty()) return@transaction null
 
             val totalAmount = cartItems.sumOf { it.product.price * it.quantity }
 
@@ -51,7 +51,8 @@ object Orders : IntIdTable() {
                         price = it.product.price
                     )
                 },
-                createdAt = LocalDateTime.now().toString()
+                createdAt = LocalDateTime.now().toString(),
+                status = status.toString()
             )
         }
     }
@@ -62,6 +63,31 @@ object Orders : IntIdTable() {
             } > 0
         }
     }
+
+    fun getAllOrders(): List<Order> {
+        return transaction {
+            Orders.selectAll().map { orderRow ->
+                val orderItems = OrderItems.select { OrderItems.orderId eq orderRow[Orders.id].value }
+                    .map { itemRow ->
+                        OrderItem(
+                            productId = itemRow[OrderItems.productId],
+                            quantity = itemRow[OrderItems.quantity],
+                            price = itemRow[OrderItems.price].toDouble()
+                        )
+                    }
+
+                Order(
+                    id = orderRow[Orders.id].value,
+                    userId = orderRow[Orders.userId],
+                    totalAmount = orderRow[Orders.totalAmount].toDouble(),
+                    items = orderItems,
+                    createdAt = orderRow[Orders.createdAt].toString(),
+                    status = orderRow[Orders.status]
+                )
+            }
+        }
+    }
+
 }
 
 object OrderItems : IntIdTable() {

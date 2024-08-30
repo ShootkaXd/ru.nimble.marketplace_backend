@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "ru.nimble"
-version = "0.9.8"
+version = "0.9.0"
 application {
     mainClass.set("ru.nimble.ApplicationKt")
 

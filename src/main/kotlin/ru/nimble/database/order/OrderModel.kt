@@ -17,5 +17,10 @@ data class Order(
     val userId: String,
     val totalAmount: Double,
     val items: List<OrderItem>,
-    val createdAt: String
+    val createdAt: String,
+)
+
+@Serializable
+data class ProcessOrderRequest(
+    val orderId: Int
 )

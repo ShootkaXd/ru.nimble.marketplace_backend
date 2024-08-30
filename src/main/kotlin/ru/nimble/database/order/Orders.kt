@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.nimble.database.cart.Cart
 import ru.nimble.database.goods.Goods
-import ru.nimble.database.order.Order
 import ru.nimble.database.user.User
 import java.time.LocalDateTime
 
@@ -14,38 +13,33 @@ object Orders : IntIdTable() {
     val userId = varchar("user_id", 100).references(User.id)
     val totalAmount = decimal("total_amount", 10, 2)
     val createdAt = datetime("created_at")
+    val status = varchar("status", 50).default("Создан")
 
     fun createOrder(userId: String): Order? {
         return transaction {
-            // Получение всех товаров из корзины пользователя
             val cartItems = Cart.getByUserId(userId)
 
             if (cartItems.isEmpty()) return@transaction null // Корзина пуста
 
-            // Расчет общей суммы заказа
             val totalAmount = cartItems.sumOf { it.product.price * it.quantity }
 
-            // Вставка заказа в таблицу Orders и получение сгенерированного ID
             val orderId = Orders.insertAndGetId {
                 it[this.userId] = userId
                 it[this.totalAmount] = totalAmount.toBigDecimal()
                 it[this.createdAt] = LocalDateTime.now()
             }.value
 
-            // Вставка каждого товара в таблицу OrderItems
             cartItems.forEach { cartItem ->
                 OrderItems.insert {
-                    it[this.orderId] = orderId // Этот параметр должен быть типа Int
+                    it[this.orderId] = orderId
                     it[productId] = cartItem.product.vendorCode
                     it[quantity] = cartItem.quantity
                     it[price] = cartItem.product.price.toBigDecimal()
                 }
             }
 
-            // Очистка корзины пользователя
             Cart.deleteByUserId(userId)
 
-            // Возвращаем данные созданного заказа
             Order(
                 id = orderId,
                 userId = userId,
@@ -57,8 +51,15 @@ object Orders : IntIdTable() {
                         price = it.product.price
                     )
                 },
-                createdAt = LocalDateTime.now().toString() // Используем LocalDateTime.now() здесь тоже
+                createdAt = LocalDateTime.now().toString()
             )
+        }
+    }
+    fun processOrder(orderId: Int): Boolean {
+        return transaction {
+            Orders.update({ Orders.id eq orderId }) {
+                it[status] = "Обработка"
+            } > 0
         }
     }
 }

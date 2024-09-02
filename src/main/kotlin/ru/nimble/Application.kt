@@ -9,6 +9,7 @@ import ru.nimble.features.login.register.configureRegisterRouting
 import ru.nimble.plugins.*
 import ru.nimble.database.passwordDB
 import ru.nimble.features.login.cart.configureCartRouting
+import ru.nimble.features.login.favorite.configureFavoriteRouting
 import ru.nimble.features.login.order.configureOrderRouting
 
 
@@ -27,5 +28,6 @@ fun main() {
         configureCartRouting()
         configureOrderRouting()
         configureSerialization()
+        configureFavoriteRouting()
     }.start(wait = true)
 }

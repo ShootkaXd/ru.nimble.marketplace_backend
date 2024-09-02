@@ -1,12 +1,12 @@
 package ru.nimble.database.goods
 
 import org.jetbrains.exposed.dao.id.UUIDTable
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
+enum class SortDirection {
+    ASC, DESC
+}
 fun ResultRow.toGoods(): GoodsModel = GoodsModel(
     id = this[Goods.id].toString(),
     name = this[Goods.name],
@@ -70,5 +70,40 @@ object Goods : UUIDTable(name = "goods") {
             .single()
             .toGoods()
     }
+
+    // Фильтрация по категории
+//    fun getGoodsByCategory(category: String): List<GoodsModel> {
+//        return transaction {
+//            Goods.select { Goods.category eq category }
+//                .map { it.toGoods() }
+//        }
+//    }
+
+    // Фильтрация по цене с сортировкой
+    fun getGoodsByPriceRange(minPrice: Double, maxPrice: Double, sortDirection: SortDirection = SortDirection.ASC): List<GoodsModel> {
+        return transaction {
+            Goods.select { (Goods.price greaterEq minPrice) and (Goods.price lessEq maxPrice) }
+                .orderBy(Goods.price, if (sortDirection == SortDirection.ASC) SortOrder.ASC else SortOrder.DESC)
+                .map { it.toGoods() }
+        }
+    }
+
+//    // Фильтрация по множеству параметров с сортировкой
+//    fun getGoodsFiltered(
+//        category: String? = null,
+//        minPrice: Double? = null,
+//        maxPrice: Double? = null,
+//        sortDirection: SortDirection = SortDirection.ASC
+//    ): List<GoodsModel> {
+//        return transaction {
+//            Goods.select {
+//                (category?.let { Goods.category eq it } ?: Op.TRUE) and
+//                        (minPrice?.let { Goods.price greaterEq it } ?: Op.TRUE) and
+//                        (maxPrice?.let { Goods.price lessEq it } ?: Op.TRUE)
+//            }
+//                .orderBy(Goods.price, if (sortDirection == SortDirection.ASC) SortOrder.ASC else SortOrder.DESC)
+//                .map { it.toGoods() }
+//        }
+//    }
 
 }

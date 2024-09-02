@@ -36,6 +36,28 @@ class GoodsController(private val call: ApplicationCall) {
         ))
     }
 
+    // Фильтрация товаров по цене с сортировкой
+    suspend fun filterGoodsByPrice() {
+        val minPrice = call.request.queryParameters["minPrice"]?.toDoubleOrNull()
+        val maxPrice = call.request.queryParameters["maxPrice"]?.toDoubleOrNull()
+        val sortDirection = call.request.queryParameters["sortDirection"]?.let {
+            if (it.equals("DESC", ignoreCase = true)) SortDirection.DESC else SortDirection.ASC
+        } ?: SortDirection.ASC
+
+        if (minPrice == null || maxPrice == null) {
+            call.respond(HttpStatusCode.BadRequest, "Неверный диапазон цен")
+            return
+        }
+
+        if (minPrice > maxPrice) {
+            call.respond(HttpStatusCode.BadRequest, "Минимальная цена не может быть больше максимальной цены")
+            return
+        }
+
+        val goods = Goods.getGoodsByPriceRange(minPrice, maxPrice, sortDirection)
+        call.respond(ListResponse(goods))
+    }
+
 
 
 

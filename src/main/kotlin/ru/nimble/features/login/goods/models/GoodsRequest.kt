@@ -1,6 +1,7 @@
 package ru.nimble.features.login.goods.models
 
 import kotlinx.serialization.Serializable
+import ru.nimble.database.reviews.ReviewModel
 
 @Serializable
 data class GoodsRequest (

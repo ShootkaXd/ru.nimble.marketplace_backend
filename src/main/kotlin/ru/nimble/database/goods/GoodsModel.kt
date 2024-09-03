@@ -2,13 +2,14 @@ package ru.nimble.database.goods
 
 import kotlinx.serialization.Serializable
 import ru.nimble.database.base.BaseModel
+import ru.nimble.database.reviews.ReviewModel
 import ru.nimble.features.login.goods.models.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 val sdf = SimpleDateFormat("yyyyMMddHHmmssSSS")
 @Serializable
-class GoodsModel(
+data class GoodsModel(
     override val id: String,
     val name : String,
     val price: Double,
@@ -18,7 +19,8 @@ class GoodsModel(
     val description : String,
     val specification : String,
     val availability : Int,
-    val vendorCode: String
+    val vendorCode: String,
+    val reviews: List<ReviewModel> = emptyList()
 ): BaseModel()
 
 fun GoodsRequest.toGoodsModel(): GoodsModel =

@@ -11,6 +11,7 @@ import ru.nimble.database.passwordDB
 import ru.nimble.features.login.cart.configureCartRouting
 import ru.nimble.features.login.favorite.configureFavoriteRouting
 import ru.nimble.features.login.order.configureOrderRouting
+import ru.nimble.features.login.reviews.configureReviewRouting
 
 
 fun main() {
@@ -29,5 +30,6 @@ fun main() {
         configureOrderRouting()
         configureSerialization()
         configureFavoriteRouting()
+        configureReviewRouting()
     }.start(wait = true)
 }

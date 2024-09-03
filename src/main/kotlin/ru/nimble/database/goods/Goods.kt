@@ -4,10 +4,15 @@ import org.jetbrains.exposed.dao.id.UUIDTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
+
+//enum class GoodsType {
+//    ELECTRONICS, FURNITURE, CLOTHING, FOOD,
+//}
 enum class SortDirection {
     ASC, DESC
 }
 fun ResultRow.toGoods(): GoodsModel = GoodsModel(
+
     id = this[Goods.id].toString(),
     name = this[Goods.name],
     price = this[Goods.price],
@@ -17,8 +22,9 @@ fun ResultRow.toGoods(): GoodsModel = GoodsModel(
     description = this[Goods.description],
     specification = this[Goods.specification],
     availability = this[Goods.availability],
-    vendorCode = this[Goods.vendorCode]
+    vendorCode = this[Goods.vendorCode],
 )
+
 object Goods : UUIDTable(name = "goods") {
     val name = Goods.varchar("name", 100)
     val price = Goods.double("price")
@@ -71,10 +77,9 @@ object Goods : UUIDTable(name = "goods") {
             .toGoods()
     }
 
-    // Фильтрация по категории
-//    fun getGoodsByCategory(category: String): List<GoodsModel> {
+//    fun getGoodsByType(type: GoodsType): List<GoodsModel> {
 //        return transaction {
-//            Goods.select { Goods.category eq category }
+//            Goods.select { Goods.type eq type.name }
 //                .map { it.toGoods() }
 //        }
 //    }
@@ -88,16 +93,15 @@ object Goods : UUIDTable(name = "goods") {
         }
     }
 
-//    // Фильтрация по множеству параметров с сортировкой
 //    fun getGoodsFiltered(
-//        category: String? = null,
+//        type: GoodsType? = null,
 //        minPrice: Double? = null,
 //        maxPrice: Double? = null,
 //        sortDirection: SortDirection = SortDirection.ASC
 //    ): List<GoodsModel> {
 //        return transaction {
 //            Goods.select {
-//                (category?.let { Goods.category eq it } ?: Op.TRUE) and
+//                (type?.let { Goods.type eq it.name } ?: Op.TRUE) and
 //                        (minPrice?.let { Goods.price greaterEq it } ?: Op.TRUE) and
 //                        (maxPrice?.let { Goods.price lessEq it } ?: Op.TRUE)
 //            }

@@ -21,6 +21,20 @@ object Reviews : UUIDTable(name = "reviews") {
         index(true, goodsId, userId)
     }
 
+
+    fun calculateAverageRating(goodsId: String): Double {
+        return transaction {
+            val ratings = Reviews
+                .select { Reviews.goodsId eq goodsId }
+                .map { it[Reviews.rating] }
+
+            if (ratings.isNotEmpty()) {
+                ratings.average()
+            } else {
+                0.0
+            }
+        }
+    }
     fun insertReview(reviewDTO: ReviewModel) {
         transaction {
             Reviews.insert {
@@ -29,6 +43,14 @@ object Reviews : UUIDTable(name = "reviews") {
                 it[text] = reviewDTO.text
                 it[photos] = reviewDTO.photos.joinToString(",")
                 it[rating] = reviewDTO.rating
+            }
+
+            // Пересчитайте средний рейтинг
+            val averageRating = calculateAverageRating(reviewDTO.goodsId)
+
+            // Обновите поле grade для товара
+            Goods.update({ Goods.vendorCode eq reviewDTO.goodsId }) {
+                it[grade] = averageRating
             }
         }
     }
@@ -57,11 +79,23 @@ object Reviews : UUIDTable(name = "reviews") {
 
     fun getGoodsWithReviewsById(goodsId: String): GoodsModel? {
         return transaction {
-            val goodsRow = Goods.select { Goods.id eq UUID.fromString(goodsId) }.singleOrNull()
+            val goodsRow = Goods.select { Goods.vendorCode eq goodsId }.singleOrNull()
             goodsRow?.let {
                 val goods = it.toGoods()
                 val reviews = Reviews.getReviewsByGoodsId(goodsId)
-                goods.copy(reviews = reviews)
+                goods.copy(reviews = reviews, grade = it[Goods.grade])
+            }
+        }
+    }
+    fun updateAllGoodsRatings() {
+        transaction {
+            Goods.selectAll().forEach { row ->
+                val goodsId = row[Goods.vendorCode]
+                val averageRating = Reviews.calculateAverageRating(goodsId)
+
+                Goods.update({ Goods.vendorCode eq goodsId }) {
+                    it[grade] = averageRating
+                }
             }
         }
     }

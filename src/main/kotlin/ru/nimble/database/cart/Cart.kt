@@ -40,11 +40,11 @@ object Cart: Table() {
         }
     }
 
-    fun clearCart(){
-        transaction {
-            Cart.deleteAll()
-        }
-    }
+//    fun clearCart(){
+//        transaction {
+//            Cart.deleteAll()
+//        }
+//    }
 
     fun getByUserId(userId: String): List<Carts>{
         return transaction {
